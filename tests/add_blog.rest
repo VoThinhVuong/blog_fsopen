@@ -3,7 +3,8 @@ Content-Type: application/json
 
 {
     "title": "2nd testing",
-    "Author": "Vuong",
-    "url": "Vuong-second-testing",
-    "likes": 0
+    "author": "Vuong",
+    "url": "www.hi.com",
+    "likes": 0,
+    "userId": "67c2c5391ee1259a4607f03c"
 }

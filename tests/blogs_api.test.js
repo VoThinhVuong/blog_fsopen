@@ -65,7 +65,7 @@ describe("Testing on DB with blogs", () => {
     assert.strictEqual(blogs[blogs.length-1].title, "Testing")
   })
 
-  test("new blog with messing likes", async () =>{
+  test("new blog with missing likes", async () =>{
     const blog = {
       title: "Testing",
       author: "Vuong",
