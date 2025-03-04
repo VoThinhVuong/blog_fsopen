@@ -1,8 +1,9 @@
 POST http://localhost:3003/api/blogs HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer hi
 
 {
-    "title": "2nd testing",
+    "title": "3nd testing",
     "author": "Vuong",
     "url": "www.hi.com",
     "likes": 0,

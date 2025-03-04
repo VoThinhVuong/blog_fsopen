@@ -8,6 +8,7 @@ const assert = require('node:assert')
 
 const api = supertest(app)
 
+// old tests without jwt
 describe("Testing on DB with blogs", () => {
   beforeEach(async () => {
     await Blog.deleteMany({})
@@ -149,6 +150,68 @@ describe("Testing on DB with no blogs", () => {
       .put(`/api/blogs/${id}`)
       .send({likes : 2})
       .expect(404)
+  })
+
+})
+
+// new tests with jwt
+describe("Testing with json web token", () => {
+
+  beforeEach(async () => {
+    await Blog.deleteMany({})
+  })
+
+  test('adding blog with valid token', async () =>{
+    const user = {
+      username: "vtvuong",
+      name: "Vuong",
+      password: "testing"
+    }
+
+    const res = await api.post("/api/login").send(user)
+    console.log(res.body)
+
+    const blog ={
+      "title": "3nd testing",
+      "author": "Vuong",
+      "url": "www.hi.com",
+      "likes": 0,
+      "userId": "67c2c5391ee1259a4607f03c"
+    }
+
+    let blog_before = await api.get('/api/blogs')
+    blog_before = blog_before.body.map(blog => blog)
+
+    await api.post("/api/blogs")
+      .send(blog)
+      .set({ Authorization: `Bearer ${res.body.token}` })
+      .expect(201)
+
+    
+    let blog_after = await api.get('/api/blogs')
+    blog_after = blog_after.body.map(blog => blog)
+    assert.strictEqual(blog_after.length, blog_before.length + 1)
+  })
+
+  test('adding blog with invalid/no token', async () =>{
+
+    const blog ={
+      "title": "3nd testing",
+      "author": "Vuong",
+      "url": "www.hi.com",
+      "likes": 0,
+      "userId": "67c2c5391ee1259a4607f03c"
+    }
+
+    const blog_before = await api.get('/api/blogs')
+
+    await api.post("/api/blogs")
+      .send(blog)
+      .expect(401)
+
+    
+    const blog_after = await api.get('/api/blogs')
+    assert.strictEqual(blog_after.length, blog_before.length)
   })
 
 })
