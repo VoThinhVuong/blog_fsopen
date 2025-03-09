@@ -69,7 +69,6 @@ blogRouter.put('/:id', middleware.userExtractor, async (request, response) => {
 
     if(!result) return response.status(404).json({error: "invalid blog id"})
         
-    if(!(result.user.toString() === request.user.id.toString())) return response.status(401).json({error: "invalid user id"})
 
     const newBlog = await Blog.findByIdAndUpdate(request.params.id, {likes: newLikes},{new: true})
     return response.json(newBlog)
