@@ -59,12 +59,6 @@ blogRouter.delete('/:id', middleware.userExtractor, async (request, response) =>
 
     await Blog.findByIdAndDelete(request.params.id)
 
-    const user = User.findById(request.user.id)
-
-    const newBlogs = user.blogs.filter(blog => blog !== request.params.id)
-    user.blogs = newBlogs
-    await user.save
-
     return response.status(204).end()
 })
 
