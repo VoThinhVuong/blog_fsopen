@@ -31,7 +31,8 @@ blogRouter.post('/', middleware.userExtractor, async (request, response) => {
         author: author,
         user: user.id,
         url: url,
-        likes: likes
+        likes: likes,
+        comments: []
     })
     
 
@@ -58,10 +59,16 @@ blogRouter.delete('/:id', middleware.userExtractor, async (request, response) =>
 
     await Blog.findByIdAndDelete(request.params.id)
 
+    const user = User.findById(request.user.id)
+
+    const newBlogs = user.blogs.filter(blog => blog !== request.params.id)
+    user.blogs = newBlogs
+    await user.save
+
     return response.status(204).end()
 })
 
-blogRouter.put('/:id', middleware.userExtractor, async (request, response) => {
+blogRouter.put('/:id/like', middleware.userExtractor, async (request, response) => {
 
     const newLikes = request.body.likes
 
@@ -71,6 +78,19 @@ blogRouter.put('/:id', middleware.userExtractor, async (request, response) => {
         
 
     const newBlog = await Blog.findByIdAndUpdate(request.params.id, {likes: newLikes},{new: true})
+    return response.json(newBlog)
+})
+
+blogRouter.post('/:id/comments', middleware.userExtractor, async (request, response) => {
+
+    const newComment = request.body.comments
+
+    const result = await Blog.findById(request.params.id)
+
+    if(!result) return response.status(404).json({error: "invalid blog id"})
+        
+    const newBlog = await Blog.findByIdAndUpdate(request.params.id, {comments: newComment},{new: true})
+
     return response.json(newBlog)
 })
 
